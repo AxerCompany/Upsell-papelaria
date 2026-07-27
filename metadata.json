@@ -1,0 +1,8 @@
+{
+  "name": "upsell Papelaria",
+  "description": "Página de vendas de upsell para o Catálogo Pronto para Vender, com player de VSL interativo, simulador de catálogo personalizado em tempo real, gerador de legendas e scripts de WhatsApp.",
+  "requestFramePermissions": [],
+  "majorCapabilities": [
+    "MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"
+  ]
+}
