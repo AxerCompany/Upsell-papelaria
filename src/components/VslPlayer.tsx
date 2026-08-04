@@ -79,12 +79,12 @@ export default function VslPlayer({ onUnlock }: VslPlayerProps) {
       
       {/* SELO ACIMA DO VÍDEO */}
       <div className="flex items-center gap-2 bg-[#5B2A86]/10 border border-[#5B2A86]/20 text-[#5B2A86] text-xs sm:text-sm font-extrabold px-4 py-2 rounded-full uppercase tracking-wider animate-pulse shadow-xs">
-        🎥 ASSISTA A AULA RÁPIDA ABAIXO
+        🎥 ASSISTA AO VÍDEO RÁPIDO ABAIXO
       </div>
 
       {/* SUBTEXTO DO VÍDEO (Exibido com destaque acima/ao lado do player) */}
       <p className="text-stone-700 text-sm sm:text-base font-medium max-w-xl text-center leading-relaxed px-2">
-        Veja como montar seus moldes na prática, com passo a passo simples para cortar, dobrar, colar e finalizar seus personalizados com mais segurança.
+        Veja como transformar seus personalizados em anúncios prontos para vender na Shopee, mesmo começando do zero.
       </p>
 
       {/* Phone Frame - TikTok Format Wrapper (9:16 Aspect Ratio) */}
@@ -112,10 +112,10 @@ export default function VslPlayer({ onUnlock }: VslPlayerProps) {
                   🎥 AULA EXCLUSIVA
                 </span>
                 <h3 className="text-white font-extrabold text-sm sm:text-base leading-snug mt-2 px-1">
-                  Monte seus primeiros personalizados do jeito certo
+                  Como vender papelaria personalizada na Shopee mesmo começando do zero
                 </h3>
                 <p className="text-stone-300 text-[11px] leading-snug mt-2 font-normal opacity-90">
-                  Veja como montar seus moldes na prática, com passo a passo simples para cortar, dobrar, colar e finalizar seus personalizados com mais segurança.
+                  Veja como transformar seus personalizados em anúncios prontos para vender na Shopee, mesmo começando do zero.
                 </p>
               </div>
 
@@ -139,7 +139,7 @@ export default function VslPlayer({ onUnlock }: VslPlayerProps) {
             /* Actual Video Embed with parameters to hide titles / byline / portrait information */
             <iframe
               ref={iframeRef}
-              src="https://player.vimeo.com/video/1195736123?badge=0&autopause=0&player_id=0&app_id=58479&title=0&byline=0&portrait=0&autoplay=1"
+              src="https://player.vimeo.com/video/1215615630?badge=0&autopause=0&player_id=0&app_id=58479&title=0&byline=0&portrait=0&autoplay=1"
               frameBorder="0"
               allow="autoplay; fullscreen; picture-in-picture; clipboard-write; text-share-sheet"
               className="absolute top-0 left-0 w-full h-full"

@@ -28,6 +28,8 @@ import VslPlayer from './components/VslPlayer';
 import CheckoutModal from './components/CheckoutModal';
 import { STUDENT_TESTIMONIALS } from './data/catalogData';
 
+const shopeePlanMockup = '/src/assets/images/shopee_plan_mockup_1785848274615.jpg';
+
 export default function App() {
   const [isCheckoutOpen, setIsCheckoutOpen] = useState(false);
   const [businessName, setBusinessName] = useState('Meu Ateliê de Cestas');
@@ -37,8 +39,8 @@ export default function App() {
   const [showRecusaModal, setShowRecusaModal] = useState(false);
   const [licencasRestantes, setLicencasRestantes] = useState(7);
 
-  // VSL Delayed unlock state
-  const [isUnlocked, setIsUnlocked] = useState(false);
+  // VSL Delayed unlock state (unlocked by default so page content displays immediately)
+  const [isUnlocked, setIsUnlocked] = useState(true);
 
   // Decorative live sales alert state to generate high visual social proof
   const [liveAlert, setLiveAlert] = useState<{ name: string; city: string; action: string } | null>(null);
@@ -153,13 +155,18 @@ export default function App() {
         
         {/* Audience Pill / SELO */}
         <span className="inline-flex items-center gap-1.5 bg-[#5B2A86]/10 text-[#5B2A86] text-xs font-bold px-3.5 py-1.5 rounded-full border border-[#5B2A86]/20 uppercase tracking-wider mb-5 leading-none shadow-xs">
-          🎁 OPORTUNIDADE EXCLUSIVA
+          🎁 OFERTA EXCLUSIVA PARA ALUNAS DO PAPELARIA DESCOMPLICADA
         </span>
 
         {/* Headline */}
         <h1 className="text-2xl sm:text-3xl md:text-4xl font-extrabold tracking-tight text-[#1E0E2E] leading-tight font-display">
-          ⚠️ A maioria das iniciantes tem os moldes na mão, mas trava na hora de montar...
+          ⚠️ Você já garantiu os moldes. Agora aprenda como colocar seus personalizados na Shopee.
         </h1>
+
+        {/* Subheadline */}
+        <p className="mt-4 text-stone-600 text-sm sm:text-base font-medium max-w-2xl mx-auto leading-relaxed">
+          Com o Plano Shopee para Papelaria Personalizada, você vai aprender como criar sua loja, escolher o que vender primeiro, escrever títulos, montar descrições e publicar seus primeiros anúncios sem depender apenas de WhatsApp, status ou indicação.
+        </p>
 
       </header>
 
@@ -169,7 +176,7 @@ export default function App() {
         {/* Aviso Acima do Vídeo */}
         <div className="bg-[#7B3DB8]/10 border border-[#7B3DB8]/20 rounded-xl p-3 sm:p-4 mb-5 text-center max-w-2xl mx-auto shadow-xs">
           <p className="text-[#5B2A86] text-xs sm:text-sm font-bold flex items-center justify-center gap-1.5 leading-snug">
-            🚨 Oferta disponível somente nesta página. Se você sair ou atualizar, pode não conseguir acessar novamente.
+            🚨 Essa condição especial está disponível somente nesta página.
           </p>
         </div>
 
@@ -177,18 +184,15 @@ export default function App() {
 
       </section>
 
-      {/* Conditionally visible content starting from the button downward */}
-      {isUnlocked && (
-        <>
-          {/* Metodo de Vendas de 4 Passos e Botao CTA Principal */}
+      {/* Metodo de Vendas de 4 Passos e Botao CTA Principal */}
           <section className="px-4 pb-16 max-w-6xl mx-auto">
             {/* Título Centralizado com subtítulo e linha de destaque */}
             <div className="text-center max-w-2xl mx-auto mb-10">
               <h2 className="text-[#5B2A86] text-xl sm:text-2xl md:text-3xl font-extrabold tracking-tight">
-                Monte seus primeiros personalizados com esses 4 passos simples
+                Coloque seus personalizados na Shopee com esses 4 passos simples
               </h2>
               <p className="text-stone-600 text-sm sm:text-base font-medium mt-2.5 leading-relaxed">
-                Aprenda em vídeo como transformar os moldes do app em peças prontas, bonitas e bem montadas.
+                Aprenda como transformar seus produtos de papelaria personalizada em anúncios mais claros, organizados e prontos para vender.
               </p>
               <div className="w-12 h-[3.5px] bg-[#EC4899] mx-auto mt-3.5 rounded-full" />
             </div>
@@ -205,10 +209,10 @@ export default function App() {
                   <Smartphone className="w-5 h-5 text-[#7B3DB8]" />
                 </div>
                 <h3 className="font-extrabold text-[13px] sm:text-sm tracking-wide uppercase text-[#5B2A86] mb-2.5">
-                  ESCOLHA O MOLDE NO APP
+                  CRIE SUA LOJA DO JEITO CERTO
                 </h3>
                 <p className="text-stone-600 text-xs sm:text-[13px] leading-relaxed">
-                  Abra o aplicativo, escolha o molde que deseja usar e separe os materiais básicos.
+                  Veja como configurar sua loja na Shopee de forma simples, mesmo começando do zero.
                 </p>
               </div>
 
@@ -221,10 +225,10 @@ export default function App() {
                   <ShoppingBag className="w-5 h-5 text-[#7B3DB8]" />
                 </div>
                 <h3 className="font-extrabold text-[13px] sm:text-sm tracking-wide uppercase text-[#5B2A86] mb-2.5">
-                  ASSISTA A MONTAGEM
+                  ESCOLHA O QUE ANUNCIAR PRIMEIRO
                 </h3>
                 <p className="text-stone-600 text-xs sm:text-[13px] leading-relaxed">
-                  Veja em vídeo como cortar, dobrar e preparar cada parte do personalizado.
+                  Entenda quais personalizados fazem mais sentido para começar sem ficar perdida.
                 </p>
               </div>
 
@@ -237,10 +241,10 @@ export default function App() {
                   <CheckCircle className="w-5 h-5 text-[#7B3DB8]" />
                 </div>
                 <h3 className="font-extrabold text-[13px] sm:text-sm tracking-wide uppercase text-[#5B2A86] mb-2.5">
-                  MONTE COM MAIS SEGURANÇA
+                  MONTE ANÚNCIOS QUE CHAMAM ATENÇÃO
                 </h3>
                 <p className="text-stone-600 text-xs sm:text-[13px] leading-relaxed">
-                  Siga a ordem certa para evitar erro, desperdício e acabamento torto.
+                  Aprenda como criar títulos, descrições e apresentações que deixam seu produto mais claro para quem está procurando.
                 </p>
               </div>
 
@@ -253,10 +257,10 @@ export default function App() {
                   <Coins className="w-5 h-5 text-[#7B3DB8]" />
                 </div>
                 <h3 className="font-extrabold text-[13px] sm:text-sm tracking-wide uppercase text-[#5B2A86] mb-2.5">
-                  VENDA PERSONALIZADOS PERFEITOS
+                  PUBLIQUE COM MAIS SEGURANÇA
                 </h3>
                 <p className="text-stone-600 text-xs sm:text-[13px] leading-relaxed">
-                  Comece a divulgar e vender seus personalizados como uma profissional experiente faz e conquiste muitos clientes.
+                  Veja como colocar seus produtos no ar e começar a vender com mais direção, sem depender apenas de status, WhatsApp ou indicação.
                 </p>
               </div>
 
@@ -268,10 +272,10 @@ export default function App() {
                 onClick={handleScrollToPricing}
                 className="w-full sm:w-auto px-10 py-5 bg-[#5B2A86] hover:bg-[#7B3DB8] text-white font-extrabold text-sm sm:text-base rounded-2xl shadow-xl hover:shadow-[#5B2A86]/35 transition-all uppercase tracking-wider animate-pulse hover:scale-103 cursor-pointer"
               >
-                QUERO ADICIONAR O CURSO AGORA
+                QUERO ACESSAR O PLANO SHOPEE
               </button>
               <div className="mt-4 bg-[#EC4899]/10 border border-[#EC4899]/20 p-4 rounded-xl text-[#5B2A86] text-xs sm:text-sm font-semibold leading-relaxed">
-                Hoje você pode adicionar esse curso de montagem em vídeo por uma condição especial, disponível somente nesta página.
+                Hoje você pode adicionar esse guia prático por uma condição especial, disponível somente nesta página.
               </div>
               <p className="text-xs text-stone-500 font-medium mt-3">
                 Acesso imediato + garantia de 7 dias
@@ -285,12 +289,22 @@ export default function App() {
               
               <div className="text-center max-w-2xl mx-auto mb-10">
                 <span className="text-[11px] sm:text-xs uppercase font-extrabold tracking-widest text-[#5B2A86] bg-[#5B2A86]/10 px-3 py-1.5 rounded-full border border-[#5B2A86]/20 inline-block mb-3">
-                  MONTAGEM PRÁTICA EM VÍDEO
+                  GUIA PRÁTICO PARA VENDER NA SHOPEE
                 </span>
                 <h2 className="text-xl sm:text-2xl md:text-3xl font-extrabold text-[#5B2A86] tracking-tight">
-                  O que você desbloqueia ao adicionar o curso hoje:
+                  O que você desbloqueia ao acessar o Plano Shopee hoje:
                 </h2>
                 <div className="w-12 h-[3.5px] bg-[#EC4899] mx-auto mt-3.5 rounded-full" />
+              </div>
+
+              {/* Mockup Display Image */}
+              <div className="mb-10 max-w-2xl mx-auto px-2">
+                <img
+                  src={shopeePlanMockup}
+                  alt="Plano Shopee para Papelaria Personalizada"
+                  className="w-full h-auto rounded-2xl shadow-xl border border-[#5B2A86]/10"
+                  referrerPolicy="no-referrer"
+                />
               </div>
 
               {/* Cards Grid */}
@@ -301,10 +315,10 @@ export default function App() {
                   <span className="text-[#EC4899] shrink-0 text-base mt-0.5">✅</span>
                   <div>
                     <h3 className="font-extrabold text-stone-900 text-sm sm:text-base leading-snug">
-                      Veja a montagem na prática
+                      Passo a passo para criar sua loja
                     </h3>
                     <p className="text-stone-600 text-xs sm:text-sm mt-1 leading-relaxed">
-                      Acompanhe em vídeo como transformar os moldes em personalizados prontos.
+                      Veja como começar sua estrutura na Shopee sem complicação e sem termos difíceis.
                     </p>
                   </div>
                 </div>
@@ -314,10 +328,10 @@ export default function App() {
                   <span className="text-[#EC4899] shrink-0 text-base mt-0.5">✅</span>
                   <div>
                     <h3 className="font-extrabold text-stone-900 text-sm sm:text-base leading-snug">
-                      Corte, dobra e cola sem travar
+                      Produtos certos para anunciar primeiro
                     </h3>
                     <p className="text-stone-600 text-xs sm:text-sm mt-1 leading-relaxed">
-                      Entenda a ordem certa para montar suas peças com mais segurança.
+                      Entenda quais personalizados colocar na vitrine para não começar no escuro.
                     </p>
                   </div>
                 </div>
@@ -327,10 +341,10 @@ export default function App() {
                   <span className="text-[#EC4899] shrink-0 text-base mt-0.5">✅</span>
                   <div>
                     <h3 className="font-extrabold text-stone-900 text-sm sm:text-base leading-snug">
-                      Evite errar e desperdiçar material
+                      Títulos prontos para adaptar
                     </h3>
                     <p className="text-stone-600 text-xs sm:text-sm mt-1 leading-relaxed">
-                      Aprenda detalhes simples para não perder impressão, papel ou tempo.
+                      Use modelos de títulos pensados para papelaria personalizada e produtos de festa.
                     </p>
                   </div>
                 </div>
@@ -340,10 +354,10 @@ export default function App() {
                   <span className="text-[#EC4899] shrink-0 text-base mt-0.5">✅</span>
                   <div>
                     <h3 className="font-extrabold text-stone-900 text-sm sm:text-base leading-snug">
-                      Acabamento mais bonito
+                      Descrições que facilitam a venda
                     </h3>
                     <p className="text-stone-600 text-xs sm:text-sm mt-1 leading-relaxed">
-                      Veja cuidados que ajudam seus personalizados a ficarem mais caprichados.
+                      Tenha exemplos de descrições para explicar melhor seus produtos e evitar dúvidas das clientes.
                     </p>
                   </div>
                 </div>
@@ -353,10 +367,10 @@ export default function App() {
                   <span className="text-[#EC4899] shrink-0 text-base mt-0.5">✅</span>
                   <div>
                     <h3 className="font-extrabold text-stone-900 text-sm sm:text-base leading-snug">
-                      Ideal para quem tem medo de montar errado
+                      Checklist do anúncio perfeito
                     </h3>
                     <p className="text-stone-600 text-xs sm:text-sm mt-1 leading-relaxed">
-                      Perfeito para quem comprou os moldes, mas quer ver alguém fazendo antes de começar.
+                      Antes de publicar, confira se seu anúncio tem tudo que precisa para parecer mais confiável.
                     </p>
                   </div>
                 </div>
@@ -366,10 +380,10 @@ export default function App() {
                   <span className="text-[#EC4899] shrink-0 text-base mt-0.5">✅</span>
                   <div>
                     <h3 className="font-extrabold text-stone-900 text-sm sm:text-base leading-snug">
-                      Seja uma profissional completa
+                      Plano simples dos primeiros 7 dias
                     </h3>
                     <p className="text-stone-600 text-xs sm:text-sm mt-1 leading-relaxed">
-                      Ideal para quem quer ser uma profissional completa e passar impressão de experiente para os clientes.
+                      Saiba o que fazer em cada dia para criar sua loja, subir produtos e começar com mais direção.
                     </p>
                   </div>
                 </div>
@@ -384,14 +398,14 @@ export default function App() {
         <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-80 h-80 bg-[#EC4899]/15 blur-[80px] rounded-full pointer-events-none"></div>
         <div className="max-w-3xl mx-auto space-y-6 relative z-10 text-center">
           
-          <h2 className="text-xl sm:text-2xl font-black text-white leading-tight">
-            ⚠️ Essa oferta não vai aparecer de novo depois que você sair desta página
+          <h2 className="text-xl sm:text-2xl font-black text-white leading-tight uppercase tracking-tight">
+            ⚠️ ESSA OFERTA NÃO VAI APARECER DE NOVO DEPOIS QUE VOCÊ SAIR DESTA PÁGINA
           </h2>
 
           <div className="space-y-3 max-w-2xl mx-auto text-stone-300 text-xs sm:text-sm leading-relaxed">
-            <p>Este curso de montagem em vídeo não está disponível publicamente nessa condição.</p>
-            <p className="font-semibold text-[#F472B6]">Ele foi liberado apenas para quem acabou de garantir o Papelaria Descomplicada.</p>
-            <p>Se você fechar agora, talvez precise comprar separadamente depois — por um valor muito maior.</p>
+            <p>Este Plano Shopee foi liberado apenas para quem acabou de garantir o Papelaria Descomplicada.</p>
+            <p>Ele mostra como transformar seus personalizados em anúncios para vender na Shopee, sem depender apenas de WhatsApp, status ou indicação.</p>
+            <p>Se você fechar agora, talvez precise comprar separadamente depois por um valor maior.</p>
           </div>
 
         </div>
@@ -406,27 +420,27 @@ export default function App() {
         <div className="max-w-xl mx-auto text-center space-y-6 relative z-10">
           
           <span className="text-[11px] sm:text-xs font-bold text-[#F472B6] bg-[#EC4899]/20 px-3.5 py-1.5 rounded-full border border-[#EC4899]/30 uppercase tracking-wider leading-none inline-block">
-            SUA OFERTA ESPECIAL — SÓ DISPONÍVEL AGORA NESTA PÁGINA
+            SUA OFERTA ESPECIAL — DISPONÍVEL SOMENTE NESTA PÁGINA
           </span>
 
           <div className="space-y-2">
             <h2 className="text-2xl sm:text-4xl font-extrabold text-white font-display tracking-tight leading-tight">
-              Curso de Montagem de Moldes na Prática
+              Plano Shopee para Papelaria Personalizada
             </h2>
             <p className="text-stone-300 text-xs sm:text-sm font-medium max-w-md mx-auto leading-relaxed pt-1">
-              Aprenda em vídeo como cortar, dobrar, colar e finalizar seus personalizados usando os moldes do aplicativo.
+              Aprenda como criar sua loja, montar seus primeiros anúncios, escrever títulos, preparar descrições e colocar seus personalizados em uma vitrine online.
             </p>
           </div>
 
           {/* Pricing figures */}
           <div className="bg-[#2D1248]/80 rounded-2xl p-6 sm:p-8 max-w-sm mx-auto border border-white/10 shadow-2xl">
-            <span className="text-xs text-stone-400 block line-through">De R$ 97,00</span>
+            <span className="text-xs text-stone-400 block line-through">De R$97,00</span>
             <div className="flex items-baseline justify-center gap-1.5 mt-2">
               <span className="text-stone-300 text-sm font-bold">Por apenas</span>
-              <strong className="text-4xl sm:text-5.5xl font-black text-[#EC4899] font-mono">R$ 67,00</strong>
+              <strong className="text-4xl sm:text-5.5xl font-black text-[#EC4899] font-mono">R$37,00</strong>
             </div>
             <span className="text-[11px] text-emerald-400 font-bold bg-emerald-500/10 px-3 py-1 rounded-full mt-3 inline-block border border-emerald-500/20">
-              Aproveite R$ 30,00 de desconto nesta página
+              Aproveite R$60,00 de desconto nesta página.
             </span>
           </div>
 
@@ -441,18 +455,10 @@ export default function App() {
               onClick={handleOpenCheckout}
               className="w-full bg-[#5B2A86] hover:bg-[#7B3DB8] text-white font-extrabold text-sm sm:text-base py-5 px-6 rounded-2xl shadow-xl shadow-[#5B2A86]/40 active:scale-97 hover:scale-103 transition-transform uppercase tracking-wider cursor-pointer font-sans"
             >
-              QUERO ADICIONAR O CURSO AGORA
+              QUERO ACESSAR O PLANO SHOPEE
             </button>
-            <button
-              type="button"
-              onClick={handleRecusaClick}
-              className="block text-center mx-auto text-stone-400 hover:text-white text-xs sm:text-sm mt-4 select-none transition-all duration-200 underline decoration-stone-600 hover:decoration-[#EC4899] cursor-pointer bg-transparent border-0 outline-none opacity-90 hover:opacity-100 font-medium"
-            >
-              Não, prefiro continuar sem o passo a passo de montagem.
-            </button>
-            
-            <p className="text-xs text-[#F472B6] font-semibold mt-3">
-              Apenas 1 clique para adicionar essa oferta ao seu pedido.
+            <p className="text-xs text-stone-400 font-medium mt-3">
+              Acesso liberado imediatamente após a confirmação do pagamento.
             </p>
           </div>
 
@@ -463,13 +469,13 @@ export default function App() {
       <section className="py-12 bg-white px-4 border-t border-stone-200/60 text-center">
         <div className="max-w-xl mx-auto space-y-3">
           <div className="inline-flex items-center gap-2 bg-emerald-50 text-emerald-800 text-xs font-bold px-3 py-1.5 rounded-full border border-emerald-100 uppercase tracking-widest mb-2 leading-none">
-            ✅ Pedido Confirmado
+            ✅ PEDIDO CONFIRMADO
           </div>
           <h3 className="text-lg sm:text-xl font-extrabold text-[#5B2A86]">
             Tudo pronto com o seu acesso principal!
           </h3>
           <p className="text-stone-600 text-xs sm:text-sm leading-relaxed max-w-md mx-auto">
-            Os dados de acesso para o <strong>Papelaria Descomplicada</strong> foram enviados agora mesmo para o seu e-mail. Caso não os encontre em alguns minutos, lembre-se de verificar suas pastas de spam e promoções.
+            Os dados de acesso ao Papelaria Descomplicada foram enviados agora mesmo para o seu e-mail. Caso não encontre em alguns minutos, verifique suas pastas de spam e promoções.
           </p>
         </div>
       </section>
@@ -488,15 +494,16 @@ export default function App() {
             </div>
           </div>
 
-          <h3 className="text-xl sm:text-2xl font-black text-stone-900 tracking-tight">
-            🛡️ Teste sem risco por 7 dias
+          <h3 className="text-xl sm:text-2xl font-black text-stone-900 tracking-tight uppercase">
+            🛡️ TESTE SEM RISCO POR 7 DIAS
           </h3>
 
           <div className="space-y-2 text-stone-600 text-xs sm:text-sm leading-relaxed max-w-xl mx-auto">
-            <p>Assista às aulas.</p>
-            <p>Veja as montagens.</p>
+            <p>Leia o guia.</p>
+            <p>Crie sua loja.</p>
+            <p>Monte seus primeiros anúncios.</p>
             <p>Coloque em prática no seu ritmo.</p>
-            <p className="font-semibold text-stone-950">E se você sentir que o curso não ajudou você a montar seus moldes com mais clareza, pode pedir reembolso em até 7 dias.</p>
+            <p className="font-semibold text-stone-950">E se você sentir que o guia não ajudou você a estruturar suas vendas na Shopee com mais clareza, pode pedir reembolso em até 7 dias.</p>
             <p>Sem perguntas.</p>
             <p>Sem burocracia.</p>
             <p className="font-bold text-[#5B2A86]">O risco é todo meu.</p>
@@ -515,10 +522,13 @@ export default function App() {
       {/* 10. CTA FINAL & SECONDARY BOTÃO */}
       <section className="py-20 bg-white border-t border-[#5B2A86]/10 px-4 text-center space-y-6">
         <div className="max-w-2xl mx-auto space-y-3">
-          <h2 className="text-xl sm:text-2xl font-black text-stone-950 leading-tight">
-            Você já garantiu os moldes no aplicativo. <span className="block text-[#5B2A86] mt-1">Agora adicione o passo a passo em vídeo para montar tudo com mais segurança.</span>
+          <h2 className="text-xl sm:text-2xl font-black text-stone-950 leading-tight uppercase tracking-tight">
+            VOCÊ JÁ GARANTIU OS MOLDES NO APLICATIVO.
           </h2>
           <p className="text-stone-600 text-xs sm:text-sm font-medium pt-1">
+            Agora adicione o guia prático para colocar seus produtos na Shopee com mais direção.
+          </p>
+          <p className="text-stone-500 text-xs font-medium pt-1">
             Depois que essa página fechar, essa condição pode não ficar disponível novamente.
           </p>
         </div>
@@ -529,14 +539,14 @@ export default function App() {
             onClick={handleOpenCheckout}
             className="w-full sm:w-auto px-10 py-5 bg-[#5B2A86] hover:bg-[#7B3DB8] text-white font-extrabold text-sm sm:text-base rounded-2xl shadow-lg transition-transform uppercase tracking-wider hover:scale-104 cursor-pointer"
           >
-            🔥 SIM, QUERO ADICIONAR O CURSO AGORA
+            🔥 SIM, QUERO ACESSAR O PLANO SHOPEE AGORA
           </button>
           <button
             type="button"
             onClick={handleRecusaClick}
             className="block text-center mx-auto text-stone-600 hover:text-stone-950 text-xs sm:text-sm mt-4 select-none transition-all duration-200 underline decoration-stone-300 hover:decoration-[#EC4899] cursor-pointer bg-transparent border-0 outline-none opacity-90 hover:opacity-100 font-medium"
           >
-            Não, obrigada. Prefiro continuar apenas com os moldes do aplicativo.
+            Não, obrigada. Prefiro continuar apenas com WhatsApp, status e indicação.
           </button>
           <p className="text-[11px] text-stone-400 mt-3 font-semibold uppercase tracking-wider">
             Acesso liberado imediatamente após a confirmação do pagamento.
@@ -551,14 +561,12 @@ export default function App() {
           onClick={handleRecusaClick} 
           className="text-stone-400 hover:text-[#5B2A86] text-xs sm:text-sm font-semibold transition underline decoration-dotted underline-offset-4 cursor-pointer"
         >
-          Não, obrigada. Prefiro perder essa oferta e continuar sem o curso.
+          Não, obrigada. Prefiro continuar apenas com WhatsApp, status e indicação.
         </a>
         <p className="text-[10px] text-stone-400 mt-6 max-w-sm mx-auto leading-relaxed">
-          Página de vendas de Upsell exclusivo de oferta única. Este curso não voltará a ser oferecido por este valor promocional.
+          Página de vendas de oferta exclusiva. Este guia pode não voltar a ser oferecido por este valor promocional.
         </p>
       </footer>
-    </>
-  )}
 
       {/* MODAL 1: RECUSA ATIVA DE OFERTA EXECUTOR (CULPA SAUDÁVEL) */}
       {showRecusaModal && (
@@ -569,13 +577,13 @@ export default function App() {
             </div>
             <div className="space-y-2">
               <h4 className="text-base sm:text-lg font-bold text-stone-900 leading-tight">
-                Você tem certeza que quer continuar sem o curso de montagem?
+                Você tem certeza que quer continuar sem o Plano Shopee?
               </h4>
               <p className="text-xs sm:text-sm text-stone-500 leading-relaxed">
-                Tentar montar os moldes do aplicativo sem ver o passo a passo em vídeo pode fazer você errar o corte, a dobra ou desperdiçar papel.
+                Vender na Shopee sem um passo a passo guiado pode fazer você perder tempo e ficar sem visitas ou vendas nos seus produtos.
               </p>
               <p className="text-xs text-[#5B2A86] bg-[#5B2A86]/10 p-3 rounded-xl font-medium leading-relaxed">
-                Por apenas <strong>R$ 67,00</strong> você garante o curso em vídeo para cortar, dobrar, colar e finalizar com total segurança!
+                Por apenas <strong>R$ 67,00</strong> você garante o guia prático para criar sua loja e publicar seus anúncios com total segurança!
               </p>
             </div>
 
@@ -588,7 +596,7 @@ export default function App() {
                 }}
                 className="w-full py-3 px-4 bg-[#5B2A86] hover:bg-[#7B3DB8] text-white rounded-xl text-xs sm:text-sm font-bold tracking-wider uppercase transition-colors cursor-pointer"
               >
-                Mudei de ideia, quero adicionar o curso!
+                Mudei de ideia, quero adicionar o Plano Shopee!
               </button>
               <button
                 type="button"
@@ -598,7 +606,7 @@ export default function App() {
                 }}
                 className="w-full py-2.5 text-xs text-stone-400 hover:text-stone-600 underline font-medium cursor-pointer"
               >
-                Sim, prefiro correr o risco e passar por essa trava sozinha.
+                Sim, prefiro correr o risco e tentar vender na Shopee sozinha.
               </button>
             </div>
           </div>
