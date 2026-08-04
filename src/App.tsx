@@ -27,8 +27,7 @@ import VslPlayer from './components/VslPlayer';
 
 import CheckoutModal from './components/CheckoutModal';
 import { STUDENT_TESTIMONIALS } from './data/catalogData';
-
-const shopeePlanMockup = '/src/assets/images/shopee_plan_mockup_1785848274615.jpg';
+import shopeePlanMockup from './assets/images/shopee_plan_mockup_1785848274615.jpg';
 
 export default function App() {
   const [isCheckoutOpen, setIsCheckoutOpen] = useState(false);
@@ -87,7 +86,7 @@ export default function App() {
   }, []);
 
   // CONFIGURAÇÕES DE REDIRECIONAMENTO — Altere as URLs abaixo para os seus links reais
-  const CHECKOUT_URL = 'https://pay.wiapy.com/6a1614895de875c51b8d3604'; // Coloque seu link de checkout externo aqui se quiser encaminhar os CTAs de compra direto para lá
+  const CHECKOUT_URL = 'https://pay.wiapy.com/6a726d1ee35a55a9bed4e798'; // Coloque seu link de checkout externo aqui se quiser encaminhar os CTAs de compra direto para lá
   const PRODUTO_PRINCIPAL_URL = 'https://fabricadecestas.com.br/acesso'; // Link para onde o cliente vai quando recusar o Upsell
 
   // Função utilitária para redirecionar de forma robusta preservando os parâmetros da URL (UTMs, Pixel, etc.)
@@ -189,7 +188,7 @@ export default function App() {
             {/* Título Centralizado com subtítulo e linha de destaque */}
             <div className="text-center max-w-2xl mx-auto mb-10">
               <h2 className="text-[#5B2A86] text-xl sm:text-2xl md:text-3xl font-extrabold tracking-tight">
-                Coloque seus personalizados na Shopee com esses 4 passos simples
+                Venda seus personalizados na Shopee com esses 4 passos simples
               </h2>
               <p className="text-stone-600 text-sm sm:text-base font-medium mt-2.5 leading-relaxed">
                 Aprenda como transformar seus produtos de papelaria personalizada em anúncios mais claros, organizados e prontos para vender.
@@ -257,24 +256,17 @@ export default function App() {
                   <Coins className="w-5 h-5 text-[#7B3DB8]" />
                 </div>
                 <h3 className="font-extrabold text-[13px] sm:text-sm tracking-wide uppercase text-[#5B2A86] mb-2.5">
-                  PUBLIQUE COM MAIS SEGURANÇA
+                  PUBLIQUE E COMECE A VENDER
                 </h3>
                 <p className="text-stone-600 text-xs sm:text-[13px] leading-relaxed">
-                  Veja como colocar seus produtos no ar e começar a vender com mais direção, sem depender apenas de status, WhatsApp ou indicação.
+                  Coloque seus kits pegue e monte no ar e comece a vender seus personalizados na Shopee de forma simples, prática e organizada.
                 </p>
               </div>
 
             </div>
 
             <div className="text-center max-w-xl mx-auto">
-              <button
-                type="button"
-                onClick={handleScrollToPricing}
-                className="w-full sm:w-auto px-10 py-5 bg-[#5B2A86] hover:bg-[#7B3DB8] text-white font-extrabold text-sm sm:text-base rounded-2xl shadow-xl hover:shadow-[#5B2A86]/35 transition-all uppercase tracking-wider animate-pulse hover:scale-103 cursor-pointer"
-              >
-                QUERO ACESSAR O PLANO SHOPEE
-              </button>
-              <div className="mt-4 bg-[#EC4899]/10 border border-[#EC4899]/20 p-4 rounded-xl text-[#5B2A86] text-xs sm:text-sm font-semibold leading-relaxed">
+              <div className="bg-[#EC4899]/10 border border-[#EC4899]/20 p-4 rounded-xl text-[#5B2A86] text-xs sm:text-sm font-semibold leading-relaxed">
                 Hoje você pode adicionar esse guia prático por uma condição especial, disponível somente nesta página.
               </div>
               <p className="text-xs text-stone-500 font-medium mt-3">
@@ -404,7 +396,7 @@ export default function App() {
 
           <div className="space-y-3 max-w-2xl mx-auto text-stone-300 text-xs sm:text-sm leading-relaxed">
             <p>Este Plano Shopee foi liberado apenas para quem acabou de garantir o Papelaria Descomplicada.</p>
-            <p>Ele mostra como transformar seus personalizados em anúncios para vender na Shopee, sem depender apenas de WhatsApp, status ou indicação.</p>
+            <p>Ele mostra como transformar seus moldes em anúncios de kits pegue e monte para vender na Shopee, sem depender apenas de WhatsApp, Instagram ou indicação.</p>
             <p>Se você fechar agora, talvez precise comprar separadamente depois por um valor maior.</p>
           </div>
 
