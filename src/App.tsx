@@ -38,40 +38,8 @@ export default function App() {
   const [showRecusaModal, setShowRecusaModal] = useState(false);
   const [licencasRestantes, setLicencasRestantes] = useState(7);
 
-  // VSL Delayed unlock state (unlocked by default so page content displays immediately)
-  const [isUnlocked, setIsUnlocked] = useState(true);
-
-  // Decorative live sales alert state to generate high visual social proof
-  const [liveAlert, setLiveAlert] = useState<{ name: string; city: string; action: string } | null>(null);
-
-  // Simulating live alerts for sales page energy
-  useEffect(() => {
-    const alerts = [
-      { name: 'Sandra M.', city: 'Limeira - SP', action: 'acabou de garantir o catálogo!' },
-      { name: 'Cláudia R.', city: 'Belo Horizonte - MG', action: 'fechou uma encomenda de R$ 250!' },
-      { name: 'Patrícia S.', city: 'Rio de Janeiro - RJ', action: 'gerou 3 links de WhatsApp agora!' },
-      { name: 'Jéssica F.', city: 'Salto - SP', action: 'acabou de garantir o catálogo!' },
-    ];
-
-    const showRandomAlert = () => {
-      const idx = Math.floor(Math.random() * alerts.length);
-      setLiveAlert(alerts[idx]);
-      setTimeout(() => {
-        setLiveAlert(null);
-      }, 4500);
-    };
-
-    // First trigger
-    const initialTimeout = setTimeout(showRandomAlert, 5000);
-    
-    // Interval
-    const interval = setInterval(showRandomAlert, 14000);
-
-    return () => {
-      clearTimeout(initialTimeout);
-      clearInterval(interval);
-    };
-  }, []);
+  // VSL Delayed unlock state (locked by default; unlocks after 30s of video playback)
+  const [isUnlocked, setIsUnlocked] = useState(false);
 
   // Simulating slow countdown of seats
   useEffect(() => {
@@ -136,19 +104,6 @@ export default function App() {
         </div>
       </div>
 
-      {/* LIVE SALES POPUP BANNER */}
-      {isUnlocked && liveAlert && (
-        <div className="fixed bottom-6 left-6 z-50 bg-[#2D1248]/95 backdrop-blur-md shadow-2xl border border-[#7B3DB8]/40 px-4 py-3.5 rounded-2xl max-w-sm flex items-center gap-3 animate-slide-up">
-          <div className="w-9 h-9 rounded-full bg-[#EC4899]/10 text-[#EC4899] flex items-center justify-center text-lg shrink-0">
-            🔔
-          </div>
-          <div>
-            <h5 className="text-[11px] font-bold text-stone-200">{liveAlert.name} ({liveAlert.city})</h5>
-            <p className="text-[10px] text-stone-400 mt-0.5">{liveAlert.action}</p>
-          </div>
-        </div>
-      )}
-
       {/* 2. HEADER SECTION (Headline & Subhead) */}
       <header className="py-8 sm:py-12 px-4 max-w-4xl mx-auto text-center">
         
@@ -183,7 +138,10 @@ export default function App() {
 
       </section>
 
-      {/* Metodo de Vendas de 4 Passos e Botao CTA Principal */}
+      {/* Conteúdo da Oferta liberado após o delay da VSL */}
+      {isUnlocked && (
+        <>
+          {/* Metodo de Vendas de 4 Passos e Botao CTA Principal */}
           <section className="px-4 pb-16 max-w-6xl mx-auto">
             {/* Título Centralizado com subtítulo e linha de destaque */}
             <div className="text-center max-w-2xl mx-auto mb-10">
@@ -559,6 +517,8 @@ export default function App() {
           Página de vendas de oferta exclusiva. Este guia pode não voltar a ser oferecido por este valor promocional.
         </p>
       </footer>
+        </>
+      )}
 
       {/* MODAL 1: RECUSA ATIVA DE OFERTA EXECUTOR (CULPA SAUDÁVEL) */}
       {showRecusaModal && (

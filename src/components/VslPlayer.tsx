@@ -5,6 +5,7 @@
 
 import React, { useState, useEffect, useRef } from 'react';
 import { Sparkles, Play } from 'lucide-react';
+import vslStartFrame from '../assets/images/vsl_start_frame_1786132742083.jpg';
 
 interface VslPlayerProps {
   onUnlock: () => void;
@@ -44,9 +45,8 @@ export default function VslPlayer({ onUnlock }: VslPlayerProps) {
         playerRef.current = player;
 
         const handleTimeUpdate = (data: { seconds: number; duration: number }) => {
-          const remaining = data.duration - data.seconds;
-          // When 30 seconds or less are left to the video end, unlock
-          if (remaining <= 30) {
+          // Unlock at 30 seconds of video playback
+          if (data.seconds >= 30) {
             onUnlock();
           }
         };
@@ -64,12 +64,12 @@ export default function VslPlayer({ onUnlock }: VslPlayerProps) {
     }
   }, [sdkLoaded, isPlaying, onUnlock]);
 
-  // 3. Absolute Failsafe: After starting the video, if 90s pass, auto-unlock in case Vimeo event fires fail cross-domain style
+  // 3. Failsafe: After starting the video, unlock after 30s
   useEffect(() => {
     if (isPlaying) {
       const timer = setTimeout(() => {
         onUnlock();
-      }, 90000); // 90 seconds failsafe
+      }, 30000); // 30 seconds delay
       return () => clearTimeout(timer);
     }
   }, [isPlaying, onUnlock]);
@@ -101,36 +101,46 @@ export default function VslPlayer({ onUnlock }: VslPlayerProps) {
         {/* Video Embed Container */}
         <div className="w-full h-full relative z-10">
           {!isPlaying ? (
-            /* Attention-Grabbing Alert Thumbnail Overlay */
+            /* Attention-Grabbing Alert Thumbnail Overlay with Shopee Mockup Image Cover */
             <div 
               onClick={startVideo}
-              className="absolute inset-0 w-full h-full bg-gradient-to-b from-[#2D1248] via-stone-950 to-[#1E0E2E] flex flex-col justify-between p-6 cursor-pointer select-none group"
+              className="absolute inset-0 w-full h-full flex flex-col justify-between p-6 cursor-pointer select-none group relative overflow-hidden bg-stone-950"
             >
+              {/* VSL Cover Background Thumbnail Image */}
+              <img 
+                src={vslStartFrame} 
+                alt="VSL Cover Start Frame"
+                className="absolute inset-0 w-full h-full object-cover object-center group-hover:scale-105 transition-transform duration-500"
+                referrerPolicy="no-referrer"
+              />
+              {/* Dark Gradient Overlay for Readability */}
+              <div className="absolute inset-0 bg-gradient-to-b from-stone-950/85 via-stone-950/50 to-stone-950/90 pointer-events-none" />
+
               {/* Alert Top Bar & TEXTO DENTRO DO CELULAR/VÍDEO */}
-              <div className="pt-6 space-y-2 text-center">
-                <span className="inline-flex items-center gap-1 bg-[#EC4899] text-[10px] text-white font-black px-2.5 py-1 rounded-full uppercase tracking-wider animate-bounce">
+              <div className="relative z-10 pt-6 space-y-2 text-center">
+                <span className="inline-flex items-center gap-1 bg-[#EC4899] text-[10px] text-white font-black px-2.5 py-1 rounded-full uppercase tracking-wider animate-bounce shadow-md">
                   🎥 AULA EXCLUSIVA
                 </span>
-                <h3 className="text-white font-extrabold text-sm sm:text-base leading-snug mt-2 px-1">
+                <h3 className="text-white font-extrabold text-sm sm:text-base leading-snug mt-2 px-1 drop-shadow-md">
                   Como vender papelaria personalizada na Shopee mesmo começando do zero
                 </h3>
-                <p className="text-stone-300 text-[11px] leading-snug mt-2 font-normal opacity-90">
+                <p className="text-stone-200 text-[11px] leading-snug mt-2 font-medium opacity-95 drop-shadow-sm">
                   Veja como transformar seus personalizados em anúncios prontos para vender na Shopee, mesmo começando do zero.
                 </p>
               </div>
 
               {/* Glowing Interactive Big Play Button */}
-              <div className="flex flex-col items-center justify-center space-y-3 my-auto">
+              <div className="relative z-10 flex flex-col items-center justify-center space-y-3 my-auto">
                 <div className="relative">
                   {/* Pulsing rings */}
                   <div className="absolute inset-0 rounded-full bg-[#EC4899]/40 animate-ping"></div>
                   <div className="absolute -inset-4 rounded-full bg-[#7B3DB8]/30 animate-pulse"></div>
                   
-                  <div className="relative w-20 h-20 rounded-full bg-[#5B2A86] hover:bg-[#7B3DB8] flex items-center justify-center shadow-[0_0_30px_rgba(91,42,134,0.8)] transition-all group-hover:scale-110 active:scale-95 duration-300">
+                  <div className="relative w-20 h-20 rounded-full bg-[#5B2A86] hover:bg-[#7B3DB8] flex items-center justify-center shadow-[0_0_30px_rgba(91,42,134,0.9)] transition-all group-hover:scale-110 active:scale-95 duration-300">
                     <Play className="w-10 h-10 text-white fill-white ml-1.5" />
                   </div>
                 </div>
-                <span className="text-[#F472B6] font-extrabold text-[11px] animate-pulse uppercase tracking-wider pt-2">
+                <span className="text-[#F472B6] font-extrabold text-[11px] animate-pulse uppercase tracking-wider pt-2 drop-shadow-md">
                   Toque para Assistir
                 </span>
               </div>
