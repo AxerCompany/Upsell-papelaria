@@ -3,147 +3,27 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import React, { useState, useEffect, useRef } from 'react';
-import { Sparkles, Play, CheckCircle, ArrowDown } from 'lucide-react';
+import React, { useState, useRef } from 'react';
+import { Play } from 'lucide-react';
 import vslStartFrame from '../assets/images/vsl_start_frame_1786132742083.jpg';
 
-interface VslPlayerProps {
-  onUnlock: () => void;
-  isUnlocked?: boolean;
-}
-
-export default function VslPlayer({ onUnlock, isUnlocked = false }: VslPlayerProps) {
+export default function VslPlayer() {
   const [isPlaying, setIsPlaying] = useState(false);
   const iframeRef = useRef<HTMLIFrameElement>(null);
-  const onUnlockRef = useRef(onUnlock);
-  const hasUnlockedRef = useRef(isUnlocked);
-
-  // Mantém a referência de onUnlock atualizada sem resetar efeitos
-  useEffect(() => {
-    onUnlockRef.current = onUnlock;
-  }, [onUnlock]);
-
-  useEffect(() => {
-    if (isUnlocked) {
-      hasUnlockedRef.current = true;
-    }
-  }, [isUnlocked]);
-
-  const triggerUnlock = () => {
-    if (!hasUnlockedRef.current) {
-      hasUnlockedRef.current = true;
-      onUnlockRef.current();
-    }
-  };
 
   const startVideo = () => {
     setIsPlaying(true);
-  };
-
-  // 1. Ouvinte nativo de postMessage do Vimeo (funciona mesmo sem SDK ou se o SDK falhar)
-  useEffect(() => {
-    const handleMessage = (event: MessageEvent) => {
-      try {
-        let payload: any = event.data;
-        if (typeof payload === 'string') {
-          try {
-            payload = JSON.parse(payload);
-          } catch {
-            return;
-          }
-        }
-        if (!payload) return;
-
-        // Eventos padrão do Vimeo: timeupdate
-        if (payload.event === 'timeupdate' && payload.data) {
-          const sec = Number(payload.data.seconds || 0);
-          if (sec >= 30) {
-            triggerUnlock();
-          }
-        }
-
-        // Eventos de finalização do vídeo (ended/finish)
-        if (payload.event === 'finish' || payload.event === 'ended') {
-          triggerUnlock();
-        }
-      } catch (err) {
-        // Ignora mensagens de outras extensões/scripts
-      }
-    };
-
-    window.addEventListener('message', handleMessage);
-    return () => window.removeEventListener('message', handleMessage);
-  }, []);
-
-  // 2. Integração com o SDK oficial Vimeo.Player (se disponível)
-  useEffect(() => {
-    if (!isPlaying) return;
-
-    let playerInstance: any = null;
-    const Vimeo = (window as any).Vimeo;
-
-    if (Vimeo?.Player && iframeRef.current) {
-      try {
-        playerInstance = new Vimeo.Player(iframeRef.current);
-
-        playerInstance.on('timeupdate', (data: { seconds: number }) => {
-          if (data && data.seconds >= 30) {
-            triggerUnlock();
-          }
-        });
-
-        playerInstance.on('ended', () => {
-          triggerUnlock();
-        });
-      } catch (e) {
-        console.warn('Vimeo SDK initialization fallback:', e);
-      }
-    }
-
-    return () => {
-      if (playerInstance) {
-        try {
-          playerInstance.off('timeupdate');
-          playerInstance.off('ended');
-        } catch {
-          // ignore
-        }
-      }
-    };
-  }, [isPlaying]);
-
-  // 3. Cronômetro de reprodução resiliente (conta 30s de reprodução contínua como garantia absoluta)
-  useEffect(() => {
-    if (!isPlaying || hasUnlockedRef.current) return;
-
-    const startTime = Date.now();
-    const interval = setInterval(() => {
-      const elapsedSeconds = (Date.now() - startTime) / 1000;
-      if (elapsedSeconds >= 30) {
-        triggerUnlock();
-        clearInterval(interval);
-      }
-    }, 500);
-
-    return () => clearInterval(interval);
-  }, [isPlaying]);
-
-  const scrollToOffer = () => {
-    const el = document.getElementById('oferta-liberada');
-    if (el) {
-      el.scrollIntoView({ behavior: 'smooth', block: 'start' });
-    }
   };
 
   return (
     <div className="flex flex-col items-center justify-center space-y-5">
       
       {/* SELO ACIMA DO VÍDEO */}
-      <div className="flex items-center gap-2 bg-[#5B2A86]/10 border border-[#5B2A86]/20 text-[#5B2A86] text-xs sm:text-sm font-extrabold px-4 py-2 rounded-full uppercase tracking-wider animate-pulse shadow-xs">
-        🎥 ASSISTA AO VÍDEO RÁPIDO ABAIXO
+      <div className="flex items-center gap-2 bg-[#5B2A86]/10 border border-[#5B2A86]/20 text-[#5B2A86] text-xs sm:text-sm font-extrabold px-4 py-2 rounded-full uppercase tracking-wider shadow-xs">
+        🎥 ASSISTA AO VÍDEO EXCLUSIVO ABAIXO
       </div>
 
-      {/* SUBTEXTO DO VÍDEO (Exibido com destaque acima/ao lado do player) */}
+      {/* SUBTEXTO DO VÍDEO */}
       <p className="text-stone-700 text-sm sm:text-base font-medium max-w-xl text-center leading-relaxed px-2">
         Veja como transformar seus personalizados em anúncios prontos para vender na Shopee, mesmo começando do zero.
       </p>
@@ -207,7 +87,7 @@ export default function VslPlayer({ onUnlock, isUnlocked = false }: VslPlayerPro
               </div>
             </div>
           ) : (
-            /* Actual Video Embed with parameters to enable API and auto-playback */
+            /* Actual Video Embed */
             <iframe
               id="vsl_iframe"
               ref={iframeRef}
@@ -246,27 +126,9 @@ export default function VslPlayer({ onUnlock, isUnlocked = false }: VslPlayerPro
 
       </div>
 
-      {/* AVISO / BOTÃO DINÂMICO APÓS O TEMPO LIMITE */}
-      {isUnlocked ? (
-        <div className="w-full max-w-sm mx-auto bg-gradient-to-r from-emerald-50 to-teal-50 border-2 border-emerald-500/30 rounded-2xl p-4 text-center shadow-lg animate-bounce">
-          <div className="flex items-center justify-center gap-1.5 text-emerald-700 text-xs sm:text-sm font-extrabold uppercase tracking-wide">
-            <CheckCircle className="w-4 h-4 text-emerald-600" />
-            OFERTA DESBLOQUEADA COM SUCESSO!
-          </div>
-          <button
-            type="button"
-            onClick={scrollToOffer}
-            className="mt-2.5 w-full bg-[#00d769] hover:bg-[#00b85a] text-white text-xs sm:text-sm font-extrabold py-3 px-4 rounded-xl shadow-md cursor-pointer transition-all flex items-center justify-center gap-2 uppercase tracking-wide"
-          >
-            <span>Ver a Oferta Liberada Abaixo</span>
-            <ArrowDown className="w-4 h-4 animate-pulse" />
-          </button>
-        </div>
-      ) : (
-        <p className="text-stone-500 text-xs sm:text-sm font-semibold flex items-center gap-2 pt-1 text-center">
-          <span>▶ Assista ao vídeo para liberar sua oferta especial exclusiva</span>
-        </p>
-      )}
+      <p className="text-stone-500 text-xs sm:text-sm font-semibold flex items-center gap-2 pt-1 text-center">
+        <span>▶ Clique acima para reproduzir o vídeo ou confira os detalhes abaixo</span>
+      </p>
 
     </div>
   );
