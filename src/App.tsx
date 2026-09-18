@@ -40,7 +40,32 @@ export default function App() {
   const [licencasRestantes, setLicencasRestantes] = useState(7);
 
   // VSL Delayed unlock state (locked by default; unlocks after 30s of video playback)
-  const [isUnlocked, setIsUnlocked] = useState(false);
+  const [isUnlocked, setIsUnlocked] = useState(() => {
+    if (typeof window !== 'undefined') {
+      const search = window.location.search;
+      if (search.includes('desbloquear') || search.includes('unlock') || search.includes('debug')) {
+        return true;
+      }
+      return localStorage.getItem('vsl_unlocked') === 'true';
+    }
+    return false;
+  });
+
+  const handleUnlock = React.useCallback(() => {
+    setIsUnlocked(true);
+    try {
+      localStorage.setItem('vsl_unlocked', 'true');
+    } catch {
+      // ignore
+    }
+    // Suave scroll automático para a seção da oferta liberada
+    setTimeout(() => {
+      const el = document.getElementById('oferta-liberada');
+      if (el) {
+        el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }
+    }, 350);
+  }, []);
 
   // Simulating slow countdown of seats
   useEffect(() => {
@@ -135,7 +160,7 @@ export default function App() {
           </p>
         </div>
 
-        <VslPlayer onUnlock={() => setIsUnlocked(true)} />
+        <VslPlayer onUnlock={handleUnlock} isUnlocked={isUnlocked} />
 
       </section>
 
@@ -143,7 +168,7 @@ export default function App() {
       {isUnlocked && (
         <>
           {/* Metodo de Vendas de 4 Passos e Botao CTA Principal */}
-          <section className="px-4 pb-16 max-w-6xl mx-auto">
+          <section id="oferta-liberada" className="px-4 pb-16 max-w-6xl mx-auto scroll-mt-6 transition-all duration-700">
             {/* Título Centralizado com subtítulo e linha de destaque */}
             <div className="text-center max-w-2xl mx-auto mb-10">
               <h2 className="text-[#5B2A86] text-xl sm:text-2xl md:text-3xl font-extrabold tracking-tight">
