@@ -3,27 +3,86 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import React, { useState, useRef } from 'react';
-import { Play } from 'lucide-react';
+import React, { useState, useEffect, useRef } from 'react';
+import { Sparkles, Play } from 'lucide-react';
 import vslStartFrame from '../assets/images/vsl_start_frame_1786132742083.jpg';
 
-export default function VslPlayer() {
+interface VslPlayerProps {
+  onUnlock?: () => void;
+}
+
+export default function VslPlayer({ onUnlock }: VslPlayerProps) {
   const [isPlaying, setIsPlaying] = useState(false);
+  const [sdkLoaded, setSdkLoaded] = useState(false);
   const iframeRef = useRef<HTMLIFrameElement>(null);
+  const playerRef = useRef<any>(null);
 
   const startVideo = () => {
     setIsPlaying(true);
   };
 
+  // 1. Dynamically load Vimeo Player SDK
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+    if ((window as any).Vimeo) {
+      setSdkLoaded(true);
+      return;
+    }
+    const script = document.createElement('script');
+    script.src = "https://player.vimeo.com/api/player.js";
+    script.async = true;
+    script.onload = () => setSdkLoaded(true);
+    document.body.appendChild(script);
+  }, []);
+
+  // 2. Initialize player and listen to events when video is playing
+  useEffect(() => {
+    if (sdkLoaded && isPlaying && iframeRef.current) {
+      const VimeoPlayer = (window as any).Vimeo.Player;
+      if (VimeoPlayer) {
+        // Instantiate Player targeting the iframe element
+        const player = new VimeoPlayer(iframeRef.current);
+        playerRef.current = player;
+
+        const handleTimeUpdate = (data: { seconds: number; duration: number }) => {
+          // Desbloqueia aos 45 segundos de reprodução do vídeo
+          if (data.seconds >= 45) {
+            onUnlock?.();
+          }
+        };
+
+        player.on('timeupdate', handleTimeUpdate);
+        player.on('ended', () => {
+          onUnlock?.();
+        });
+
+        return () => {
+          player.off('timeupdate', handleTimeUpdate);
+          player.off('ended');
+        };
+      }
+    }
+  }, [sdkLoaded, isPlaying, onUnlock]);
+
+  // 3. Failsafe: após iniciar o vídeo, libera o conteúdo aos 45 segundos
+  useEffect(() => {
+    if (isPlaying) {
+      const timer = setTimeout(() => {
+        onUnlock?.();
+      }, 45000); // 45 segundos de delay
+      return () => clearTimeout(timer);
+    }
+  }, [isPlaying, onUnlock]);
+
   return (
     <div className="flex flex-col items-center justify-center space-y-5">
       
       {/* SELO ACIMA DO VÍDEO */}
-      <div className="flex items-center gap-2 bg-[#5B2A86]/10 border border-[#5B2A86]/20 text-[#5B2A86] text-xs sm:text-sm font-extrabold px-4 py-2 rounded-full uppercase tracking-wider shadow-xs">
-        🎥 ASSISTA AO VÍDEO EXCLUSIVO ABAIXO
+      <div className="flex items-center gap-2 bg-[#5B2A86]/10 border border-[#5B2A86]/20 text-[#5B2A86] text-xs sm:text-sm font-extrabold px-4 py-2 rounded-full uppercase tracking-wider animate-pulse shadow-xs">
+        🎥 ASSISTA AO VÍDEO RÁPIDO ABAIXO
       </div>
 
-      {/* SUBTEXTO DO VÍDEO */}
+      {/* SUBTEXTO DO VÍDEO (Exibido com destaque acima/ao lado do player) */}
       <p className="text-stone-700 text-sm sm:text-base font-medium max-w-xl text-center leading-relaxed px-2">
         Veja como transformar seus personalizados em anúncios prontos para vender na Shopee, mesmo começando do zero.
       </p>
@@ -87,11 +146,10 @@ export default function VslPlayer() {
               </div>
             </div>
           ) : (
-            /* Actual Video Embed */
+            /* Actual Video Embed with parameters to hide titles / byline / portrait information */
             <iframe
-              id="vsl_iframe"
               ref={iframeRef}
-              src="https://player.vimeo.com/video/1215615630?api=1&player_id=vsl_iframe&badge=0&autopause=0&title=0&byline=0&portrait=0&autoplay=1"
+              src="https://player.vimeo.com/video/1215615630?badge=0&autopause=0&player_id=0&app_id=58479&title=0&byline=0&portrait=0&autoplay=1"
               frameBorder="0"
               allow="autoplay; fullscreen; picture-in-picture; clipboard-write; text-share-sheet"
               className="absolute top-0 left-0 w-full h-full"
@@ -126,8 +184,9 @@ export default function VslPlayer() {
 
       </div>
 
-      <p className="text-stone-500 text-xs sm:text-sm font-semibold flex items-center gap-2 pt-1 text-center">
-        <span>▶ Clique acima para reproduzir o vídeo ou confira os detalhes abaixo</span>
+      {/* TEXTO PEQUENO ABAIXO */}
+      <p className="text-stone-600 text-xs sm:text-sm font-bold flex items-center gap-2 pt-1">
+        <span>▶ Clique para assistir direto pelo reprodutor</span>
       </p>
 
     </div>

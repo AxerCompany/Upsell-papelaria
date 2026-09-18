@@ -39,6 +39,9 @@ export default function App() {
   const [showRecusaModal, setShowRecusaModal] = useState(false);
   const [licencasRestantes, setLicencasRestantes] = useState(7);
 
+  // VSL Delayed unlock: libera o restante da página aos 45s de vídeo rodando
+  const [isUnlocked, setIsUnlocked] = useState(false);
+
   // Simulating slow countdown of seats
   useEffect(() => {
     const interval = setInterval(() => {
@@ -132,12 +135,15 @@ export default function App() {
           </p>
         </div>
 
-        <VslPlayer />
+        <VslPlayer onUnlock={() => setIsUnlocked(true)} />
 
       </section>
 
-      {/* Metodo de Vendas de 4 Passos e Botao CTA Principal */}
-      <section className="px-4 pb-16 max-w-6xl mx-auto">
+      {/* Conteúdo da Oferta liberado aos 45 segundos após o vídeo estar rodando */}
+      {isUnlocked && (
+        <>
+          {/* Metodo de Vendas de 4 Passos e Botao CTA Principal */}
+          <section className="px-4 pb-16 max-w-6xl mx-auto">
             {/* Título Centralizado com subtítulo e linha de destaque */}
             <div className="text-center max-w-2xl mx-auto mb-10">
               <h2 className="text-[#5B2A86] text-xl sm:text-2xl md:text-3xl font-extrabold tracking-tight">
@@ -479,7 +485,7 @@ export default function App() {
             style={{ backgroundColor: '#00d769' }}
             className="w-full sm:w-auto px-10 py-5 hover:bg-[#00b85a] text-white font-extrabold text-sm sm:text-base rounded-2xl shadow-lg transition-transform uppercase tracking-wider hover:scale-104 cursor-pointer"
           >
-            🔥 SIM, EU ACEITO ESSA OFERTA
+            LIBERAR ACESSO AGORA
           </button>
           <a
             href="https://wiapy.com/login"
@@ -513,6 +519,8 @@ export default function App() {
           Página de vendas de oferta exclusiva. Este guia pode não voltar a ser oferecido por este valor promocional.
         </p>
       </footer>
+        </>
+      )}
 
       {/* MODAL 1: RECUSA ATIVA DE OFERTA EXECUTOR (CULPA SAUDÁVEL) */}
       {showRecusaModal && (
