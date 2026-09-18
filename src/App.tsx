@@ -24,6 +24,7 @@ import {
   ArrowUpRight
 } from 'lucide-react';
 import VslPlayer from './components/VslPlayer';
+import { WiapyUpsellButton } from './components/WiapyUpsellButton';
 
 import CheckoutModal from './components/CheckoutModal';
 import { STUDENT_TESTIMONIALS } from './data/catalogData';
@@ -53,9 +54,9 @@ export default function App() {
     return () => clearInterval(interval);
   }, []);
 
-  // CONFIGURAÇÕES DE REDIRECIONAMENTO — Altere as URLs abaixo para os seus links reais
-  const CHECKOUT_URL = 'https://pay.wiapy.com/6a726d1ee35a55a9bed4e798'; // Coloque seu link de checkout externo aqui se quiser encaminhar os CTAs de compra direto para lá
-  const PRODUTO_PRINCIPAL_URL = 'https://fabricadecestas.com.br/acesso'; // Link para onde o cliente vai quando recusar o Upsell
+  // CONFIGURAÇÕES DE REDIRECIONAMENTO — Links oficiais Wiapy
+  const CHECKOUT_URL = 'https://pay.wiapy.com/checkout/6a7273ff1b13df5c3c597b87'; // Link oficial do checkout da oferta
+  const PRODUTO_PRINCIPAL_URL = 'https://wiapy.com/login'; // Link oficial para onde o cliente vai quando recusar a oferta
 
   // Função utilitária para redirecionar de forma robusta preservando os parâmetros da URL (UTMs, Pixel, etc.)
   const redirectWithParams = (targetUrl: string) => {
@@ -398,17 +399,11 @@ export default function App() {
             Pagamento único. Acesso imediato. Esta oferta some quando você fechar esta página.
           </p>
 
-          {/* Big CTA button & Refusal */}
-          <div className="pt-2 max-w-sm mx-auto">
-            <button
-              type="button"
-              onClick={handleOpenCheckout}
-              className="w-full bg-[#5B2A86] hover:bg-[#7B3DB8] text-white font-extrabold text-sm sm:text-base py-5 px-6 rounded-2xl shadow-xl shadow-[#5B2A86]/40 active:scale-97 hover:scale-103 transition-transform uppercase tracking-wider cursor-pointer font-sans"
-            >
-              QUERO ACESSAR O PLANO SHOPEE
-            </button>
-            <p className="text-xs text-stone-400 font-medium mt-3">
-              Acesso liberado imediatamente após a confirmação do pagamento.
+          {/* Big CTA button & Refusal - Wiapy 1-Click Upsell */}
+          <div className="bg-white rounded-2xl p-5 sm:p-6 max-w-md mx-auto shadow-2xl border border-white/20 text-stone-900">
+            <WiapyUpsellButton />
+            <p className="text-[11px] text-stone-500 font-medium mt-3">
+              🔒 Pagamento seguro via Wiapy • Acesso imediato
             </p>
           </div>
 
@@ -487,17 +482,21 @@ export default function App() {
           <button
             type="button"
             onClick={handleOpenCheckout}
-            className="w-full sm:w-auto px-10 py-5 bg-[#5B2A86] hover:bg-[#7B3DB8] text-white font-extrabold text-sm sm:text-base rounded-2xl shadow-lg transition-transform uppercase tracking-wider hover:scale-104 cursor-pointer"
+            style={{ backgroundColor: '#00d769' }}
+            className="w-full sm:w-auto px-10 py-5 hover:bg-[#00b85a] text-white font-extrabold text-sm sm:text-base rounded-2xl shadow-lg transition-transform uppercase tracking-wider hover:scale-104 cursor-pointer"
           >
-            🔥 SIM, QUERO ACESSAR O PLANO SHOPEE AGORA
+            🔥 SIM, EU ACEITO ESSA OFERTA
           </button>
-          <button
-            type="button"
-            onClick={handleRecusaClick}
+          <a
+            href="https://wiapy.com/login"
+            onClick={(e) => {
+              e.preventDefault();
+              redirectWithParams(PRODUTO_PRINCIPAL_URL);
+            }}
             className="block text-center mx-auto text-stone-600 hover:text-stone-950 text-xs sm:text-sm mt-4 select-none transition-all duration-200 underline decoration-stone-300 hover:decoration-[#EC4899] cursor-pointer bg-transparent border-0 outline-none opacity-90 hover:opacity-100 font-medium"
           >
-            Não, obrigada. Prefiro continuar apenas com WhatsApp, status e indicação.
-          </button>
+            Recusar está oferta
+          </a>
           <p className="text-[11px] text-stone-400 mt-3 font-semibold uppercase tracking-wider">
             Acesso liberado imediatamente após a confirmação do pagamento.
           </p>
@@ -507,11 +506,14 @@ export default function App() {
       {/* 11. REJECTION DISCRET_LINK */}
       <footer className="py-12 bg-[#F8F8F8] text-center px-4">
         <a 
-          href="#recusa"
-          onClick={handleRecusaClick} 
-          className="text-stone-400 hover:text-[#5B2A86] text-xs sm:text-sm font-semibold transition underline decoration-dotted underline-offset-4 cursor-pointer"
+          href="https://wiapy.com/login"
+          onClick={(e) => {
+            e.preventDefault();
+            redirectWithParams(PRODUTO_PRINCIPAL_URL);
+          }} 
+          className="text-stone-500 hover:text-stone-900 text-xs sm:text-sm font-semibold transition underline decoration-dotted underline-offset-4 cursor-pointer"
         >
-          Não, obrigada. Prefiro continuar apenas com WhatsApp, status e indicação.
+          Recusar está oferta
         </a>
         <p className="text-[10px] text-stone-400 mt-6 max-w-sm mx-auto leading-relaxed">
           Página de vendas de oferta exclusiva. Este guia pode não voltar a ser oferecido por este valor promocional.
@@ -535,7 +537,7 @@ export default function App() {
                 Vender na Shopee sem um passo a passo guiado pode fazer você perder tempo e ficar sem visitas ou vendas nos seus produtos.
               </p>
               <p className="text-xs text-[#5B2A86] bg-[#5B2A86]/10 p-3 rounded-xl font-medium leading-relaxed">
-                Por apenas <strong>R$ 67,00</strong> você garante o guia prático para criar sua loja e publicar seus anúncios com total segurança!
+                Por apenas <strong>R$ 37,00</strong> você garante o guia prático para criar sua loja e publicar seus anúncios com total segurança!
               </p>
             </div>
 
@@ -544,9 +546,10 @@ export default function App() {
                 type="button"
                 onClick={() => {
                   setShowRecusaModal(false);
-                  setIsCheckoutOpen(true);
+                  handleOpenCheckout();
                 }}
-                className="w-full py-3 px-4 bg-[#5B2A86] hover:bg-[#7B3DB8] text-white rounded-xl text-xs sm:text-sm font-bold tracking-wider uppercase transition-colors cursor-pointer"
+                style={{ backgroundColor: '#00d769' }}
+                className="w-full py-3 px-4 hover:bg-[#00b85a] text-white rounded-xl text-xs sm:text-sm font-bold tracking-wider uppercase transition-colors cursor-pointer"
               >
                 Mudei de ideia, quero adicionar o Plano Shopee!
               </button>
