@@ -97,7 +97,7 @@ export default function CheckoutModal({ isOpen, onClose, businessName, whatsapp 
               </div>
               <div className="text-right">
                 <span className="text-xs text-stone-400 font-mono line-through block">De R$ 97,00</span>
-                <strong className="text-xl font-black text-[#EC4899] font-mono">R$ 67,00</strong>
+                <strong className="text-xl font-black text-[#EC4899] font-mono">R$ 47,00</strong>
               </div>
             </div>
 

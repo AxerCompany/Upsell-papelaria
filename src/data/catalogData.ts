@@ -172,7 +172,7 @@ export const VSL_SCRIPT_SUBTITLES = [
   { time: 54, text: "Mulheres que usaram esse catálogo..." },
   { time: 57, text: "...venderam já nas primeiras horas de divulgação!" },
   { time: 61, text: "Hoje, só nessa página..." },
-  { time: 63, text: "...você pode garantir acesso por apenas R$ 37." },
+  { time: 63, text: "...você pode garantir acesso por apenas R$ 47." },
   { time: 67, text: "E se não gostar — me manda mensagem em 7 dias..." },
   { time: 71, text: "...e eu devolvo cada centavo." },
   { time: 73, text: "Sem perguntas. Sem burocracia. O risco é todo meu." },
