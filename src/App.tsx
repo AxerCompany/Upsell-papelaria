@@ -388,10 +388,10 @@ export default function App() {
             <span className="text-xs text-stone-400 block line-through">De R$97,00</span>
             <div className="flex items-baseline justify-center gap-1.5 mt-2">
               <span className="text-stone-300 text-sm font-bold">Por apenas</span>
-              <strong className="text-4xl sm:text-5.5xl font-black text-[#EC4899] font-mono">R$47,00</strong>
+              <strong className="text-4xl sm:text-5.5xl font-black text-[#EC4899] font-mono">R$37,00</strong>
             </div>
             <span className="text-[11px] text-emerald-400 font-bold bg-emerald-500/10 px-3 py-1 rounded-full mt-3 inline-block border border-emerald-500/20">
-              Aproveite R$50,00 de desconto nesta página.
+              Aproveite R$60,00 de desconto nesta página.
             </span>
           </div>
 
@@ -537,7 +537,7 @@ export default function App() {
                 Vender na Shopee sem um passo a passo guiado pode fazer você perder tempo e ficar sem visitas ou vendas nos seus produtos.
               </p>
               <p className="text-xs text-[#5B2A86] bg-[#5B2A86]/10 p-3 rounded-xl font-medium leading-relaxed">
-                Por apenas <strong>R$ 47,00</strong> você garante o guia prático para criar sua loja e publicar seus anúncios com total segurança!
+                Por apenas <strong>R$ 37,00</strong> você garante o guia prático para criar sua loja e publicar seus anúncios com total segurança!
               </p>
             </div>
 
