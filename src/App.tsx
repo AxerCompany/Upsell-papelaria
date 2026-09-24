@@ -3,9 +3,10 @@
  * SPDX-License-Identifier: Apache-2.5
  */
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { 
   CheckCircle,
+  CheckCircle2,
   HelpCircle,
   ArrowRight,
   Sparkles,
@@ -21,7 +22,11 @@ import {
   Smartphone,
   Share2,
   Calculator,
-  ArrowUpRight
+  ArrowUpRight,
+  X,
+  Zap,
+  Flame,
+  Clock
 } from 'lucide-react';
 import VslPlayer from './components/VslPlayer';
 import { WiapyUpsellButton } from './components/WiapyUpsellButton';
@@ -42,6 +47,35 @@ export default function App() {
   // VSL Delayed unlock: libera o restante da página aos 45s de vídeo rodando
   const [isUnlocked, setIsUnlocked] = useState(false);
 
+  // Pop-up 1: Cliente #1111 (Preço R$ 27,00) - disparado perto do botão de comprar
+  const [showCustomer1111Modal, setShowCustomer1111Modal] = useState(false);
+  const [hasSpecialDiscount, setHasSpecialDiscount] = useState(false);
+
+  // Pop-up 2: Oferta Relâmpago R$ 19,90 - disparado se recusar o pop-up de 27,00
+  const [showOffer1990Modal, setShowOffer1990Modal] = useState(false);
+  const [countdown1990, setCountdown1990] = useState(299); // 4m 59s
+
+  // Mensagem/Pop-up 3: Compra principal já entregue - disparado se recusar a oferta de 19,90
+  const [showDeliveredMessageModal, setShowDeliveredMessageModal] = useState(false);
+
+  const buySectionRef = useRef<HTMLElement>(null);
+  const hasTriggeredModalRef = useRef(false);
+
+  // Countdown timer para o popup de R$ 19,90
+  useEffect(() => {
+    if (!showOffer1990Modal) return;
+    const timer = setInterval(() => {
+      setCountdown1990((prev) => (prev > 0 ? prev - 1 : 0));
+    }, 1000);
+    return () => clearInterval(timer);
+  }, [showOffer1990Modal]);
+
+  const formatCountdown = (seconds: number) => {
+    const mins = Math.floor(seconds / 60);
+    const secs = seconds % 60;
+    return `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+  };
+
   // Simulating slow countdown of seats
   useEffect(() => {
     const interval = setInterval(() => {
@@ -54,9 +88,65 @@ export default function App() {
     return () => clearInterval(interval);
   }, []);
 
+  // Dispara o pop-up de parabéns assim que o visitante chega perto do botão de comprar / final da página
+  useEffect(() => {
+    if (!isUnlocked) return;
+
+    const currentSection = buySectionRef.current || document.getElementById('pricing-block');
+    let observer: IntersectionObserver | null = null;
+
+    if (currentSection && 'IntersectionObserver' in window) {
+      observer = new IntersectionObserver(
+        (entries) => {
+          entries.forEach((entry) => {
+            if (entry.isIntersecting && !hasTriggeredModalRef.current) {
+              hasTriggeredModalRef.current = true;
+              setShowCustomer1111Modal(true);
+            }
+          });
+        },
+        { threshold: 0.1 }
+      );
+      observer.observe(currentSection);
+    }
+
+    // Scroll listener de alta precisão para garantir disparo assim que chegar perto do botão de comprar
+    const handleScroll = () => {
+      if (hasTriggeredModalRef.current) return;
+      const section = buySectionRef.current || document.getElementById('pricing-block');
+      if (section) {
+        const rect = section.getBoundingClientRect();
+        if (rect.top <= window.innerHeight * 0.75) {
+          hasTriggeredModalRef.current = true;
+          setShowCustomer1111Modal(true);
+        }
+      }
+    };
+
+    window.addEventListener('scroll', handleScroll, { passive: true });
+    handleScroll();
+
+    return () => {
+      if (observer && currentSection) observer.unobserve(currentSection);
+      window.removeEventListener('scroll', handleScroll);
+    };
+  }, [isUnlocked]);
+
   // CONFIGURAÇÕES DE REDIRECIONAMENTO — Links oficiais Wiapy
   const CHECKOUT_URL = 'https://pay.wiapy.com/checkout/6a7273ff1b13df5c3c597b87'; // Link oficial do checkout da oferta
+  const CHECKOUT_1990_URL = 'https://pay.wiapy.com/m_zJp2qnr8F-'; // Checkout oficial da oferta relâmpago de R$ 19,90
   const PRODUTO_PRINCIPAL_URL = 'https://wiapy.com/login'; // Link oficial para onde o cliente vai quando recusar a oferta
+
+  // Handlers para o fluxo sequencial de popups e recusas
+  const handleRefuseCustomer1111 = () => {
+    setShowCustomer1111Modal(false);
+    setShowOffer1990Modal(true);
+  };
+
+  const handleRefuseOffer1990 = () => {
+    setShowOffer1990Modal(false);
+    setShowDeliveredMessageModal(true);
+  };
 
   // Função utilitária para redirecionar de forma robusta preservando os parâmetros da URL (UTMs, Pixel, etc.)
   const redirectWithParams = (targetUrl: string) => {
@@ -363,7 +453,11 @@ export default function App() {
       </section>
 
       {/* 8. DETAILED PRICING CALLOUT BLOCK */}
-      <section id="pricing-block" className="py-20 sm:py-24 bg-[#1E0E2E] text-stone-100 px-4 relative overflow-hidden">
+      <section 
+        id="pricing-block" 
+        ref={buySectionRef} 
+        className="py-20 sm:py-24 bg-[#1E0E2E] text-stone-100 px-4 relative overflow-hidden"
+      >
         
         {/* Abstract graphic bg glow effects */}
         <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[400px] h-[400px] bg-[#5B2A86]/30 blur-[120px] rounded-full pointer-events-none"></div>
@@ -384,15 +478,44 @@ export default function App() {
           </div>
 
           {/* Pricing figures */}
-          <div className="bg-[#2D1248]/80 rounded-2xl p-6 sm:p-8 max-w-sm mx-auto border border-white/10 shadow-2xl">
-            <span className="text-xs text-stone-400 block line-through">De R$97,00</span>
-            <div className="flex items-baseline justify-center gap-1.5 mt-2">
-              <span className="text-stone-300 text-sm font-bold">Por apenas</span>
-              <strong className="text-4xl sm:text-5.5xl font-black text-[#EC4899] font-mono">R$37,00</strong>
-            </div>
-            <span className="text-[11px] text-emerald-400 font-bold bg-emerald-500/10 px-3 py-1 rounded-full mt-3 inline-block border border-emerald-500/20">
-              Aproveite R$60,00 de desconto nesta página.
-            </span>
+          <div className="bg-[#2D1248]/80 rounded-2xl p-6 sm:p-8 max-w-sm mx-auto border border-white/10 shadow-2xl transition-all">
+            {hasSpecialDiscount ? (
+              <>
+                <div className="mb-2.5">
+                  <span className="text-[11px] font-black text-pink-300 bg-[#EC4899]/25 px-3 py-1 rounded-full border border-[#EC4899]/40 uppercase tracking-wide inline-flex items-center gap-1.5 shadow-sm">
+                    <Sparkles className="w-3.5 h-3.5 text-pink-400" />
+                    CUPOM CLIENTE #1.111 APLICADO!
+                  </span>
+                </div>
+                <div className="flex items-center justify-center gap-2 text-stone-400 text-xs sm:text-sm font-mono">
+                  <span className="line-through text-stone-400">De R$ 97,00</span>
+                  <span className="text-stone-500">•</span>
+                  <span className="line-through text-stone-300 font-semibold">De R$ 37,00</span>
+                </div>
+                <div className="flex items-baseline justify-center gap-1.5 mt-2">
+                  <span className="text-stone-300 text-sm font-bold">Novo Preço:</span>
+                  <strong className="text-4xl sm:text-5.5xl font-black text-[#00d769] font-mono animate-pulse">R$ 27,00</strong>
+                </div>
+                <span className="text-[11px] text-emerald-300 font-bold bg-emerald-500/15 px-3 py-1 rounded-full mt-3 inline-block border border-emerald-500/30">
+                  🎉 Desconto comemorativo: R$ 70,00 OFF liberado!
+                </span>
+              </>
+            ) : (
+              <>
+                <div className="flex items-center justify-center gap-2 text-stone-400 text-xs font-mono">
+                  <span className="line-through text-stone-400">De R$ 97,00</span>
+                  <span className="text-stone-500">•</span>
+                  <span className="line-through text-stone-300">R$ 37,00</span>
+                </div>
+                <div className="flex items-baseline justify-center gap-1.5 mt-2">
+                  <span className="text-stone-300 text-sm font-bold">Por apenas</span>
+                  <strong className="text-4xl sm:text-5.5xl font-black text-[#EC4899] font-mono">R$ 37,00</strong>
+                </div>
+                <span className="text-[11px] text-emerald-400 font-bold bg-emerald-500/10 px-3 py-1 rounded-full mt-3 inline-block border border-emerald-500/20">
+                  Aproveite R$ 60,00 de desconto nesta página.
+                </span>
+              </>
+            )}
           </div>
 
           <p className="text-xs sm:text-sm text-stone-300 font-semibold max-w-sm mx-auto leading-relaxed">
@@ -522,7 +645,292 @@ export default function App() {
         </>
       )}
 
-      {/* MODAL 1: RECUSA ATIVA DE OFERTA EXECUTOR (CULPA SAUDÁVEL) */}
+      {/* MODAL 0: POP-UP DE PARABÉNS CLIENTE #1111 (DESCONTO DE R$ 37 POR R$ 27) */}
+      {showCustomer1111Modal && (
+        <div 
+          id="cliente-1111-modal" 
+          className="fixed inset-0 z-50 bg-[#1E0E2E]/85 backdrop-blur-xs flex items-center justify-center p-4 animate-fade-in"
+          onClick={(e) => {
+            if (e.target === e.currentTarget) {
+              handleRefuseCustomer1111();
+            }
+          }}
+        >
+          <div className="bg-white rounded-3xl p-6 sm:p-8 max-w-lg w-full shadow-2xl border-2 border-[#EC4899]/30 text-center relative overflow-hidden animate-scale-up">
+            
+            {/* Top decorative gradient glow */}
+            <div className="absolute top-0 left-0 right-0 h-2 bg-gradient-to-r from-[#5B2A86] via-[#EC4899] to-[#00d769]" />
+            
+            {/* Botão de Fechar X */}
+            <button
+              type="button"
+              onClick={handleRefuseCustomer1111}
+              className="absolute top-4 right-4 text-stone-400 hover:text-stone-700 p-1.5 rounded-full hover:bg-stone-100 transition-colors cursor-pointer"
+              aria-label="Fechar"
+            >
+              <X className="w-5 h-5" />
+            </button>
+
+            {/* Badge de Destaque */}
+            <div className="inline-flex items-center gap-1.5 bg-[#EC4899]/10 text-[#EC4899] border border-[#EC4899]/20 px-3.5 py-1.5 rounded-full text-xs font-black uppercase tracking-wider mb-4 animate-bounce">
+              <Sparkles className="w-4 h-4 text-[#EC4899]" />
+              <span>PARABÉNS! VOCÊ FOI SELECIONADA</span>
+              <Sparkles className="w-4 h-4 text-[#EC4899]" />
+            </div>
+
+            {/* Ícone de Celebração */}
+            <div className="w-16 h-16 bg-gradient-to-br from-[#5B2A86] to-[#EC4899] text-white rounded-2xl flex items-center justify-center text-3xl mx-auto shadow-lg shadow-purple-900/20 mb-3">
+              🎉
+            </div>
+
+            <div className="space-y-2 mb-6">
+              <h3 className="text-xl sm:text-2xl font-black text-[#5B2A86] tracking-tight leading-snug">
+                Você é a nossa cliente de número <span className="text-[#EC4899]">#1.111</span>!
+              </h3>
+              <p className="text-stone-600 text-xs sm:text-sm leading-relaxed max-w-md mx-auto">
+                Para celebrar este marco especial na nossa comunidade de papelaria personalizada, você acabou de desbloquear um <strong className="text-stone-900">desconto exclusivo de comemoração</strong>:
+              </p>
+            </div>
+
+            {/* Box de Preço Promocional Exclusivo: 97 cortado -> 37 cortado -> 27 preço novo */}
+            <div className="bg-gradient-to-br from-[#2D1248] to-[#1E0E2E] text-white rounded-2xl p-5 sm:p-6 mb-6 shadow-xl border border-purple-500/20 relative">
+              <span className="text-[10px] sm:text-xs font-bold uppercase tracking-wider text-pink-300 bg-pink-500/20 px-3 py-1 rounded-full inline-block border border-pink-500/30 mb-2">
+                ⚡ DESCONTO EXCLUSIVO CLIENTE #1.111
+              </span>
+              
+              <div className="flex flex-wrap items-center justify-center gap-2 sm:gap-3 my-3">
+                <span className="text-stone-400 text-sm sm:text-base line-through font-semibold">
+                  De R$ 97,00
+                </span>
+                <span className="text-stone-500">•</span>
+                <span className="text-stone-400 text-sm sm:text-base line-through font-semibold">
+                  De R$ 37,00
+                </span>
+                <span className="text-pink-400 font-bold text-sm">➔</span>
+                <div className="flex items-baseline gap-1.5 bg-emerald-500/10 px-3.5 py-1.5 rounded-xl border border-emerald-500/25">
+                  <span className="text-xs text-stone-300 font-medium">Novo Preço:</span>
+                  <strong className="text-3xl sm:text-4xl font-black text-[#00d769] font-mono">
+                    R$ 27,00
+                  </strong>
+                </div>
+              </div>
+
+              <div className="mt-2.5 inline-flex items-center gap-1.5 text-[11px] font-bold text-emerald-300 bg-emerald-500/10 px-3 py-1 rounded-full border border-emerald-500/20">
+                <Zap className="w-3.5 h-3.5 text-emerald-400" />
+                <span>Economia de mais R$ 10,00 exclusiva para você agora!</span>
+              </div>
+            </div>
+
+            {/* Botões de Ação */}
+            <div className="space-y-3">
+              <button
+                type="button"
+                onClick={() => {
+                  setHasSpecialDiscount(true);
+                  setShowCustomer1111Modal(false);
+                  handleOpenCheckout();
+                }}
+                style={{ backgroundColor: '#00d769' }}
+                className="w-full py-4 px-6 hover:bg-[#00b85a] text-white rounded-2xl text-sm sm:text-base font-extrabold tracking-wider uppercase transition-all shadow-lg hover:shadow-emerald-500/30 hover:scale-[1.02] cursor-pointer flex items-center justify-center gap-2"
+              >
+                <span>🔥 QUERO MEU DESCONTO: PAGAR R$ 27,00 AGORA</span>
+              </button>
+
+              <button
+                type="button"
+                onClick={handleRefuseCustomer1111}
+                className="text-[11px] text-stone-400 hover:text-stone-600 underline font-medium cursor-pointer block mx-auto pt-1"
+              >
+                Recusar desconto de R$ 27,00
+              </button>
+            </div>
+
+          </div>
+        </div>
+      )}
+
+      {/* MODAL 1: OFERTA RELÂMPAGO IMPERDÍVEL R$ 19,90 (DISPARADO NA RECUSA DO POPUP ANTERIOR) */}
+      {showOffer1990Modal && (
+        <div 
+          id="oferta-1990-modal" 
+          className="fixed inset-0 z-50 bg-[#1E0E2E]/90 backdrop-blur-xs flex items-center justify-center p-4 animate-fade-in"
+          onClick={(e) => {
+            if (e.target === e.currentTarget) {
+              handleRefuseOffer1990();
+            }
+          }}
+        >
+          <div className="bg-white rounded-3xl p-6 sm:p-8 max-w-lg w-full shadow-2xl border-2 border-amber-400/40 text-center relative overflow-hidden animate-scale-up">
+            
+            {/* Top decorative gradient bar */}
+            <div className="absolute top-0 left-0 right-0 h-2 bg-gradient-to-r from-amber-500 via-rose-500 to-emerald-500" />
+            
+            {/* Close button X */}
+            <button
+              type="button"
+              onClick={handleRefuseOffer1990}
+              className="absolute top-4 right-4 text-stone-400 hover:text-stone-700 p-1.5 rounded-full hover:bg-stone-100 transition-colors cursor-pointer"
+              aria-label="Fechar"
+            >
+              <X className="w-5 h-5" />
+            </button>
+
+            {/* Badge de Alerta Máximo */}
+            <div className="inline-flex items-center gap-1.5 bg-rose-50 text-rose-600 border border-rose-200 px-3.5 py-1.5 rounded-full text-xs font-black uppercase tracking-wider mb-4 animate-pulse">
+              <Flame className="w-4 h-4 text-rose-500" />
+              <span>🚨 ESPERE! ÚLTIMA CHANCE ABSOLUTA</span>
+              <Flame className="w-4 h-4 text-rose-500" />
+            </div>
+
+            <div className="space-y-2 mb-5">
+              <h3 className="text-xl sm:text-2xl font-black text-stone-900 tracking-tight leading-snug">
+                Eu não quero que você fique sem vender na Shopee por causa de <span className="text-rose-600">R$ 7</span>!
+              </h3>
+              <p className="text-stone-600 text-xs sm:text-sm leading-relaxed max-w-md mx-auto">
+                Eu sei como começar dá medo e cada centavo conta. Por isso, tomei uma decisão inédita: vou liberar o <strong className="text-stone-900">Plano Shopee Completo a preço simbólico de custo</strong> para você começar hoje mesmo!
+              </p>
+            </div>
+
+            {/* Box Oferta Relâmpago 19,90 */}
+            <div className="bg-gradient-to-br from-[#200B3B] to-[#120524] text-white rounded-2xl p-5 sm:p-6 mb-5 shadow-xl border border-amber-400/30 relative">
+              <div className="flex items-center justify-between gap-2 mb-2.5 pb-2.5 border-b border-white/10">
+                <span className="text-[11px] font-bold text-amber-400 uppercase tracking-wider flex items-center gap-1">
+                  <Zap className="w-3.5 h-3.5" /> OFERTA RELÂMPAGO IMPERDÍVEL
+                </span>
+                <span className="text-[11px] font-mono text-stone-300 flex items-center gap-1 bg-white/10 px-2 py-0.5 rounded">
+                  <Clock className="w-3 h-3 text-amber-300" /> {formatCountdown(countdown1990)}
+                </span>
+              </div>
+
+              {/* Riscados: 97,00 -> 37,00 -> 27,00 -> 19,90 */}
+              <div className="flex flex-wrap items-center justify-center gap-2 text-xs sm:text-sm text-stone-400 font-mono mb-2">
+                <span className="line-through">De R$ 97,00</span>
+                <span>•</span>
+                <span className="line-through">R$ 37,00</span>
+                <span>•</span>
+                <span className="line-through text-rose-300">R$ 27,00</span>
+              </div>
+
+              <div className="flex items-baseline justify-center gap-1.5 my-2">
+                <span className="text-stone-300 text-xs sm:text-sm font-bold">Por apenas</span>
+                <strong className="text-4xl sm:text-5xl font-black text-[#00d769] font-mono tracking-tight drop-shadow-md">
+                  R$ 19,90
+                </strong>
+              </div>
+
+              <p className="text-[11px] text-amber-300 font-semibold mt-2">
+                🔥 Menos de R$ 0,66 por dia • Pagamento Único • Acesso Imediato
+              </p>
+            </div>
+
+            {/* Checkmarks persuasivos */}
+            <div className="text-left bg-stone-50 rounded-xl p-3.5 mb-5 space-y-1.5 text-xs text-stone-700 border border-stone-200/70">
+              <div className="flex items-center gap-2">
+                <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0" />
+                <span>Passo a passo descomplicado para criar sua loja do zero</span>
+              </div>
+              <div className="flex items-center gap-2">
+                <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0" />
+                <span>Modelos prontos de títulos e descrições para copiar</span>
+              </div>
+              <div className="flex items-center gap-2">
+                <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0" />
+                <span>Garantia incondicional blindada de 7 dias mantida</span>
+              </div>
+            </div>
+
+            {/* CTA Button 19,90 - Link oficial https://pay.wiapy.com/m_zJp2qnr8F- */}
+            <div className="space-y-3">
+              <button
+                type="button"
+                onClick={() => {
+                  redirectWithParams(CHECKOUT_1990_URL);
+                }}
+                style={{ backgroundColor: '#00d769' }}
+                className="w-full py-4 px-6 hover:bg-[#00b85a] text-white rounded-2xl text-sm sm:text-base font-black tracking-wider uppercase transition-all shadow-xl hover:shadow-emerald-500/30 hover:scale-[1.02] cursor-pointer flex items-center justify-center gap-2"
+              >
+                <span>🔥 SIM, QUERO APROVEITAR POR APENAS R$ 19,90</span>
+              </button>
+
+              <button
+                type="button"
+                onClick={handleRefuseOffer1990}
+                className="text-[11px] text-stone-400 hover:text-stone-600 underline font-medium cursor-pointer block mx-auto pt-1"
+              >
+                Não, prefiro perder essa oportunidade e continuar sem o Plano Shopee
+              </button>
+            </div>
+
+          </div>
+        </div>
+      )}
+
+      {/* MODAL 2: MENSAGEM DE COMPRA ENTREGUE (SE RECUSAR A OFERTA DE 19,90) */}
+      {showDeliveredMessageModal && (
+        <div 
+          id="compra-entregue-modal" 
+          className="fixed inset-0 z-50 bg-[#1E0E2E]/85 backdrop-blur-xs flex items-center justify-center p-4 animate-fade-in"
+          onClick={(e) => {
+            if (e.target === e.currentTarget) {
+              setShowDeliveredMessageModal(false);
+            }
+          }}
+        >
+          <div className="bg-white rounded-3xl p-6 sm:p-8 max-w-md w-full shadow-2xl border border-emerald-100 text-center relative overflow-hidden animate-scale-up space-y-5">
+            
+            {/* Top decorative green bar */}
+            <div className="absolute top-0 left-0 right-0 h-2 bg-gradient-to-r from-emerald-400 via-emerald-500 to-teal-600" />
+            
+            {/* Botão de Fechar X */}
+            <button
+              type="button"
+              onClick={() => setShowDeliveredMessageModal(false)}
+              className="absolute top-4 right-4 text-stone-400 hover:text-stone-700 p-1.5 rounded-full hover:bg-stone-100 transition-colors cursor-pointer"
+              aria-label="Fechar"
+            >
+              <X className="w-5 h-5" />
+            </button>
+
+            {/* Ícone de Sucesso */}
+            <div className="w-16 h-16 bg-emerald-50 text-emerald-600 rounded-2xl flex items-center justify-center text-3xl mx-auto shadow-md border border-emerald-100 mt-2">
+              <CheckCircle2 className="w-10 h-10 text-emerald-600" />
+            </div>
+
+            <div className="space-y-2">
+              <div className="inline-block bg-emerald-100 text-emerald-800 text-[10px] font-black px-2.5 py-1 rounded-full uppercase tracking-wider">
+                PEDIDO CONFIRMADO E LIBERADO
+              </div>
+              <h3 className="text-xl font-black text-stone-900 leading-tight">
+                Sua compra principal já foi entregue com sucesso!
+              </h3>
+              <p className="text-xs sm:text-sm text-stone-600 leading-relaxed">
+                Fique tranquila! Os seus dados de acesso ao <strong>Papelaria Descomplicada</strong> já foram processados e enviados diretamente para o seu e-mail cadastrado.
+              </p>
+            </div>
+
+            {/* Card com Detalhes da Entrega */}
+            <div className="bg-stone-50 rounded-2xl p-4 text-left border border-stone-200/70 text-xs space-y-2">
+              <div className="flex justify-between items-center pb-2 border-b border-stone-200/60">
+                <span className="text-stone-500">Status:</span>
+                <span className="font-bold text-emerald-600 flex items-center gap-1">
+                  <Check className="w-3.5 h-3.5" /> Liberado e Enviado
+                </span>
+              </div>
+              <div className="flex justify-between items-center">
+                <span className="text-stone-500">Onde acessar:</span>
+                <span className="font-semibold text-[#5B2A86]">Caixa de Entrada do E-mail</span>
+              </div>
+            </div>
+
+            <div className="bg-amber-50 border border-amber-200/70 rounded-xl p-3 text-[11px] text-amber-800 leading-relaxed">
+              💡 <strong>Dica importante:</strong> Se não localizar o e-mail em até 3 minutos na Caixa de Entrada, verifique também as pastas de <strong>Spam</strong> ou <strong>Promoções</strong>.
+            </div>
+
+          </div>
+        </div>
+      )}
+
+      {/* MODAL 3: RECUSA ATIVA DE OFERTA EXECUTOR (CULPA SAUDÁVEL) */}
       {showRecusaModal && (
         <div id="recusa-modal" className="fixed inset-0 z-50 bg-[#1E0E2E]/80 backdrop-blur-xs flex items-center justify-center p-4">
           <div className="bg-white rounded-3xl p-6 sm:p-8 max-w-md w-full shadow-2xl border border-purple-100 text-center space-y-5 animate-scale-up">
@@ -537,7 +945,7 @@ export default function App() {
                 Vender na Shopee sem um passo a passo guiado pode fazer você perder tempo e ficar sem visitas ou vendas nos seus produtos.
               </p>
               <p className="text-xs text-[#5B2A86] bg-[#5B2A86]/10 p-3 rounded-xl font-medium leading-relaxed">
-                Por apenas <strong>R$ 37,00</strong> você garante o guia prático para criar sua loja e publicar seus anúncios com total segurança!
+                Por apenas <strong>{hasSpecialDiscount ? 'R$ 27,00' : 'R$ 37,00'}</strong> você garante o guia prático para criar sua loja e publicar seus anúncios com total segurança!
               </p>
             </div>
 
