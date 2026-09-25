@@ -29,9 +29,13 @@ declare global {
 
 interface WiapyUpsellButtonProps {
   className?: string;
+  onRefusalClick?: (e: React.MouseEvent) => void;
 }
 
-export const WiapyUpsellButton: React.FC<WiapyUpsellButtonProps> = ({ className = '' }) => {
+export const WiapyUpsellButton: React.FC<WiapyUpsellButtonProps> = ({ 
+  className = '',
+  onRefusalClick 
+}) => {
   const [isWiapyActive, setIsWiapyActive] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
   const initializedRef = useRef(false);
@@ -105,10 +109,31 @@ export const WiapyUpsellButton: React.FC<WiapyUpsellButtonProps> = ({ className 
       }, 100);
     }
 
+    const handleContainerClick = (e: MouseEvent) => {
+      const target = e.target as HTMLElement | null;
+      if (!target) return;
+      const link = target.closest('a');
+      if (link && (link.textContent?.toLowerCase().includes('recusar') || link.href?.includes('login'))) {
+        if (onRefusalClick) {
+          e.preventDefault();
+          e.stopPropagation();
+          onRefusalClick(e as unknown as React.MouseEvent);
+        }
+      }
+    };
+
+    const containerEl = containerRef.current;
+    if (containerEl) {
+      containerEl.addEventListener('click', handleContainerClick, true);
+    }
+
     return () => {
       if (interval) clearInterval(interval);
+      if (containerEl) {
+        containerEl.removeEventListener('click', handleContainerClick, true);
+      }
     };
-  }, []);
+  }, [onRefusalClick]);
 
   return (
     <div className={`w-full max-w-[400px] mx-auto text-center ${className}`}>
@@ -169,6 +194,12 @@ export const WiapyUpsellButton: React.FC<WiapyUpsellButtonProps> = ({ className 
             id="wiapy-fallback-refusal-link"
             href={getUrlWithCurrentParams(REFUSAL_URL)}
             target="_self"
+            onClick={(e) => {
+              if (onRefusalClick) {
+                e.preventDefault();
+                onRefusalClick(e);
+              }
+            }}
             style={{
               display: 'block',
               marginTop: '12px',
